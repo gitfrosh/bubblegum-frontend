@@ -11,16 +11,15 @@ import {
 } from "mdb-react-ui-kit";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useContract, useSigner, useAccount } from "wagmi";
-import { abi } from "./utils";
 import { ethers } from 'ethers';
 
 function App() {
   const { data: signer } = useSigner();
   const { address } = useAccount();
-  const contract = useContract({
-    addressOrName: "YOUR_SMART_CONTRACT_ADDRESS",
-    contractInterface: abi,
-  });
+  // const contract = useContract({
+  //   addressOrName: "YOUR_SMART_CONTRACT_ADDRESS",
+  //   contractInterface: '', // insert abi here
+  // });
 
   const mint = async (event) => {
     event.preventDefault();
@@ -48,7 +47,7 @@ function App() {
             </MDBNavbarNav>
           </div>
         </MDBContainer>
-        {/* insert connect button here!*/}
+        Connect? {/* insert connect button here!*/}
       </MDBNavbar>
 
       <div className="p-5 text-center bg-light">
