@@ -23,7 +23,7 @@ function App() {
   const { chain: activeChain } = useNetwork();
   const [formInput, setFormInput] = useState();
   const contractConfig = {
-    address: "0x..",
+    address: "0x..", // set you contract address here
     abi: [
       {
         "constant": false,
