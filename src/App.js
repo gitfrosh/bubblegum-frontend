@@ -12,14 +12,18 @@ import {
 import {
   usePrepareContractWrite,
   useContractWrite,
-  useNetwork
+  useNetwork,
+  useAccount
 } from "wagmi";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { ethers } from 'ethers';
 
 function App() {
+  const { address } = useAccount();
   const { chain: activeChain } = useNetwork();
   const [formInput, setFormInput] = useState();
   const contractConfig = {
-    address: "0x",
+    address: "0x..",
     abi: [
       {
         "constant": false,
@@ -43,7 +47,7 @@ function App() {
   const { config } = usePrepareContractWrite({
     ...contractConfig,
     functionName: "mint",
-    args: [formInput],
+    args: [address, formInput && ethers.utils.parseEther(formInput?.toString())],
     chainId: activeChain?.id,
   });
 
@@ -74,7 +78,7 @@ function App() {
             </MDBNavbarNav>
           </div>
         </MDBContainer>
-        Connect? {/* insert connect button here!*/}
+        <ConnectButton showBalance={false} />
       </MDBNavbar>
 
       <div className="p-5 text-center bg-light">
@@ -82,20 +86,18 @@ function App() {
           The <em>Bubblegum</em> Faucet
         </h1>
         <h4 className="mb-3">Never run out of BBB &hearts;</h4>
-        <form onSubmit={mint}>
-          <input onChange={(e) => setFormInput(e.target.value)} style={{ width: 200 }} type="number" id="amount" />
-          <br />
-          <br />
-          <button
-            type="submit"
-            className="btn btn-primary"
-            role="button"
-          >
-            Mint my BBB!
-          </button>
-        </form>
+        <input onChange={(e) => setFormInput(e.target.value)} style={{ width: 200 }} type="number" id="amount" />
+        <br />
+        <br />
+        <button
+          onClick={(e) => mint()}
+          className="btn btn-primary"
+          role="button"
+        >
+          Mint my BBB!
+        </button>
       </div>
-    </header>
+    </header >
   );
 }
 
