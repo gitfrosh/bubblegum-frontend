@@ -1,5 +1,5 @@
 import "./App.css";
-import React from "react";
+import React, { useState } from "react";
 import {
   MDBNavbar,
   MDBNavbarNav,
@@ -9,21 +9,48 @@ import {
   MDBContainer,
   MDBIcon,
 } from "mdb-react-ui-kit";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useContract, useSigner, useAccount } from "wagmi";
-import { ethers } from 'ethers';
+import {
+  usePrepareContractWrite,
+  useContractWrite,
+  useNetwork
+} from "wagmi";
 
 function App() {
-  const { data: signer } = useSigner();
-  const { address } = useAccount();
-  // const contract = useContract({
-  //   addressOrName: "YOUR_SMART_CONTRACT_ADDRESS",
-  //   contractInterface: '', // insert abi here
-  // });
+  const { chain: activeChain } = useNetwork();
+  const [formInput, setFormInput] = useState();
+  const contractConfig = {
+    address: "0x",
+    abi: [
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "to",
+            "type": "address"
+          },
+          {
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "name": "mint",
+        "outputs": [],
+        "type": "function",
+        "stateMutability": "nonpayable"
+      }
+    ],
+  };
+  const { config } = usePrepareContractWrite({
+    ...contractConfig,
+    functionName: "mint",
+    args: [formInput],
+    chainId: activeChain?.id,
+  });
 
-  const mint = async (event) => {
-    event.preventDefault();
-    // add minting logic here
+  const { write } = useContractWrite(config);
+
+  const mint = async () => {
+    write?.();
   };
 
   return (
@@ -56,7 +83,7 @@ function App() {
         </h1>
         <h4 className="mb-3">Never run out of BBB &hearts;</h4>
         <form onSubmit={mint}>
-          <input style={{ width: 200 }} type="number" id="amount" />
+          <input onChange={(e) => setFormInput(e.target.value)} style={{ width: 200 }} type="number" id="amount" />
           <br />
           <br />
           <button

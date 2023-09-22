@@ -5,33 +5,37 @@ import "@rainbow-me/rainbowkit/styles.css";
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { goerli } from "wagmi/chains";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
+import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
+import { createPublicClient, http } from "viem";
 
-const { chains, provider, webSocketProvider } = configureChains(
-  [chain.rinkeby], // insert your preferred chain
-  [
-    publicProvider(),
-  ]
-);
+const networks = [goerli]; // add more networks if  needed
 
+const { chains } = configureChains(networks, [
+  publicProvider(),
+]);
 const { connectors } = getDefaultWallets({
-  appName: "Bubblegum",
+  appName: "ColorHueState",
+  projectId: "1f111cfa89ffd372a79b7a99e9ab38f2",
   chains,
 });
 
-const wagmiClient = createClient({
+
+const config = createConfig({
   autoConnect: true,
+  publicClient: createPublicClient({
+    chain: networks[0],
+    transport: http(),
+  }),
   connectors,
-  provider,
-  webSocketProvider,
 });
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <WagmiConfig client={wagmiClient}>
+    <WagmiConfig config={config}>
       <RainbowKitProvider chains={chains}>
         <App />
       </RainbowKitProvider>
